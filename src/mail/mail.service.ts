@@ -1,6 +1,7 @@
 // src/mail/mail.service.ts
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import sgMail from '@sendgrid/mail';
+import 'dotenv/config';
 
 @Injectable()
 export class MailService {
@@ -23,17 +24,13 @@ export class MailService {
     text?: string;
     html?: string;
   }) {
-    const from = process.env.MAIL_FROM;
+    const from = process.env.MAIL_FROM!;
     if (!from) {
       throw new Error('MAIL_FROM no está definido en el .env');
     }
 
-    if (!to || !subject || (!text && !html)) {
-      throw new Error('Debes proporcionar "to", "subject" y al menos "text" o "html"');
-    }
-
     const msg = {
-      from,
+      from, // TypeScript ahora sabe que nunca es undefined
       to,
       subject,
       text: text ?? '',
