@@ -18,7 +18,7 @@ async function bootstrap() {
     prefix: '/uploads/projects/',
   });
 
-  // CORS dinámico (acepta frontend separado por coma en .env)
+  // Configuración de CORS
   const allowedOrigins = process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
     : '*';
@@ -26,6 +26,8 @@ async function bootstrap() {
   app.enableCors({
     origin: allowedOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Validaciones globales
@@ -37,12 +39,8 @@ async function bootstrap() {
     }),
   );
 
-  // Puerto seguro con fallback
   const PORT: number = Number(process.env.PORT) || 3000;
-
-  // Compatible con Railway, Render, Docker, local, etc.
   await app.listen(PORT, '0.0.0.0');
-
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
 }
 
