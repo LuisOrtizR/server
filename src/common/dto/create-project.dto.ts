@@ -1,19 +1,24 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateProjectDto {
-  @IsNotEmpty()
   @IsString()
   title: string;
 
-  @IsNotEmpty()
   @IsString()
   description: string;
 
-  @IsNotEmpty()
   @IsString()
   techStack: string;
 
   @IsOptional()
   @IsString()
   link?: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string; // Imagen principal
+
+  @IsOptional()
+  @IsArray()
+  gallery?: string[]; // Varias imágenes
 }
