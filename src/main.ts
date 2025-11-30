@@ -10,6 +10,7 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Servir archivos estáticos
   app.useStaticAssets(join(__dirname, '..', 'uploads/aboutme'), {
     prefix: '/uploads/aboutme/',
   });
@@ -17,8 +18,13 @@ async function bootstrap() {
     prefix: '/uploads/projects/',
   });
 
+  // CORS: permite dominios de FRONTEND_URL separados por coma
+  const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',')
+    : '*';
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL?.split(',') || true,
+    origin: allowedOrigins,
     credentials: true,
   });
 
@@ -30,9 +36,12 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`🚀 Server running on port ${port}`);
+  const port = Number(process.env.PORT) || 3000;
+
+  // Cuando es Railway => bind 0.0.0.0
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`🚀 Server running on http://0.0.0.0:${port}`);
 }
 
 bootstrap();
