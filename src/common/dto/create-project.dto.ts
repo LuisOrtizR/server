@@ -1,13 +1,17 @@
-import { IsString, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNotEmpty } from 'class-validator';
 
 export class CreateProjectDto {
   @IsString()
+  @IsNotEmpty()
   title!: string;
 
+  // Permitimos textos largos (Prisma ya usa TEXT si se cambió el schema)
   @IsString()
+  @IsNotEmpty()
   description!: string;
 
   @IsString()
+  @IsNotEmpty()
   techStack!: string;
 
   @IsOptional()

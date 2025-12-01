@@ -48,7 +48,7 @@ model Contact {
 model Project {
   id          Int      @id @default(autoincrement())
   title       String
-  description String
+  description String   @db.Text
   techStack   String
   image       String?
   gallery     Json?    @default("[]")
