@@ -32,9 +32,16 @@ model Contact {
   id        String   @id @default(cuid())
   name      String
   email     String
-  message   String   @db.Text     // <- permite mensajes largos
+  message   String   @db.Text
   isRead    Boolean  @default(false)
+  starred   Boolean  @default(false)  // ⭐ NUEVO: Sistema de favoritos
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt        // ⭐ NUEVO: Tracking de actualizaciones
+
+  @@index([isRead])      // ⭐ NUEVO: Índice para filtrado por lectura
+  @@index([createdAt])   // ⭐ NUEVO: Índice para ordenamiento
+  @@index([starred])     // ⭐ NUEVO: Índice para filtrado por favoritos
+  @@map("contacts")
 }
 
 model Project {
@@ -50,9 +57,9 @@ model Project {
 
 model AboutMe {
   id          Int      @id @default(autoincrement())
-  description String   @db.Text     // <- permite descripción larga
-  images      Json?    @default("[]") // Array de nombres de archivo de imágenes
-  cv          String?                       // Nombre del archivo PDF
+  description String   @db.Text
+  images      Json?    @default("[]")
+  cv          String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
