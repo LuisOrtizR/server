@@ -2,13 +2,13 @@ import { IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateProjectDto {
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @IsString()
-  techStack: string;
+  techStack!: string;
 
   @IsOptional()
   @IsString()

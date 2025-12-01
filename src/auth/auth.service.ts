@@ -4,15 +4,18 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { randomBytes } from 'crypto';
 import { addMinutes, isBefore } from 'date-fns';
-import { MailService } from '../mail/mail.service';
+import { MailServiceApp } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private mailService: MailService,
-  ) {}
+  
+
+constructor(
+  private prisma: PrismaService,
+  private jwtService: JwtService,
+  private mailService: MailServiceApp,
+) {}
+
 
   // LOGIN
   async login(email: string, password: string) {
@@ -66,12 +69,11 @@ export class AuthService {
     });
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-
-    await this.mailService.sendMail({
-      to: email,
-      subject: 'Recuperar contraseña - Portfolio',
-      html: `<p>Haz clic <a href="${resetUrl}">aquí</a>. Expira en 60 minutos.</p>`,
-    });
+    await this.mailService.sendMail(
+  email,
+  'Recuperar contraseña - Portfolio',
+  `<p>Haz clic <a href="${resetUrl}">aquí</a>. Expira en 60 minutos.</p>`,
+);
 
     return { ok: true };
   }
