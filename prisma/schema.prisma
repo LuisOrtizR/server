@@ -41,7 +41,6 @@ model Contact {
   @@index([isRead])      // ⭐ NUEVO: Índice para filtrado por lectura
   @@index([createdAt])   // ⭐ NUEVO: Índice para ordenamiento
   @@index([starred])     // ⭐ NUEVO: Índice para filtrado por favoritos
-  @@map("Contact")
 }
 
 model Project {
