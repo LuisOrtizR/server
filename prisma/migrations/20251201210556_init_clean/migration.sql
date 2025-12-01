@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `Admin` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `emails` JSON NOT NULL,
@@ -12,14 +12,15 @@ CREATE TABLE `Admin` (
 
 -- CreateTable
 CREATE TABLE `PasswordReset` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `token` VARCHAR(191) NOT NULL,
     `used` BOOLEAN NOT NULL DEFAULT false,
-    `adminId` VARCHAR(191) NOT NULL,
+    `adminId` INTEGER NOT NULL,
     `expiresAt` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `PasswordReset_token_key`(`token`),
+    INDEX `PasswordReset_adminId_fkey`(`adminId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -28,8 +29,9 @@ CREATE TABLE `Contact` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
-    `message` VARCHAR(191) NOT NULL,
+    `message` TEXT NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `isRead` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -44,6 +46,18 @@ CREATE TABLE `Project` (
     `gallery` JSON NULL,
     `link` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `AboutMe` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `description` TEXT NOT NULL,
+    `images` JSON NULL,
+    `cv` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

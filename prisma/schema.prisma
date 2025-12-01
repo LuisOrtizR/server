@@ -11,7 +11,7 @@ model Admin {
   id             Int             @id @default(autoincrement())
   username       String          @unique
   password       String
-  emails         Json
+  emails         Json            @default("[]")
   createdAt      DateTime        @default(now())
   passwordResets PasswordReset[]
 }
@@ -23,7 +23,8 @@ model PasswordReset {
   adminId   Int
   expiresAt DateTime
   createdAt DateTime @default(now())
-  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId], map: "PasswordReset_adminId_fkey")
 }
@@ -33,10 +34,15 @@ model Contact {
   name      String
   email     String
   message   String   @db.Text
-  createdAt DateTime @default(now())
   isRead    Boolean  @default(false)
+  starred   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("Contact")
+  @@index([isRead])
+  @@index([starred])
+  @@index([createdAt])
 }
 
 model Project {
@@ -45,7 +51,7 @@ model Project {
   description String
   techStack   String
   image       String?
-  gallery     Json?
+  gallery     Json?    @default("[]")
   link        String?
   createdAt   DateTime @default(now())
 }
@@ -53,7 +59,7 @@ model Project {
 model AboutMe {
   id          Int      @id @default(autoincrement())
   description String   @db.Text
-  images      Json?
+  images      Json?    @default("[]")
   cv          String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
