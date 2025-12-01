@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from '../common/dto/create-contact.dto';
 
 @Controller('contacts')
 export class ContactController {
-  constructor(private contactService: ContactService) {}
+  constructor(private readonly contactService: ContactService) {}
 
   @Get()
   getAllContacts() {
@@ -13,16 +13,33 @@ export class ContactController {
 
   @Get(':id')
   getContact(@Param('id') id: string) {
-    return this.contactService.findOne(id); // id como string
+    return this.contactService.findOne(id);
   }
 
   @Post()
-  createContact(@Body() dto: CreateContactDto) {
-    return this.contactService.createContact(dto);
+  async createContact(@Body() dto: CreateContactDto) {
+    try {
+      const contact = await this.contactService.createContact(dto);
+      return {
+        success: true,
+        message: 'Contacto enviado y guardado correctamente',
+        data: contact,
+      };
+    } catch (error: any) {
+      console.error('❌ Error en createContact:', error?.message);
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Error procesando el contacto',
+          error: error?.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Delete(':id')
   deleteContact(@Param('id') id: string) {
-    return this.contactService.delete(id); // id como string
+    return this.contactService.delete(id);
   }
 }
