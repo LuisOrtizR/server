@@ -24,13 +24,13 @@ export class MailService {
     text?: string;
     html?: string;
   }) {
-    const from = process.env.MAIL_FROM!;
+    const from = process.env.MAIL_FROM;
     if (!from) {
       throw new Error('MAIL_FROM no está definido en el .env');
     }
 
     const msg = {
-      from, // TypeScript ahora sabe que nunca es undefined
+      from,
       to,
       subject,
       text: text ?? '',
@@ -38,10 +38,13 @@ export class MailService {
     };
 
     try {
-      const result = await sgMail.send(msg);
-      return result;
-    } catch (err) {
-      console.error('Error enviando email con SendGrid:', err);
+      const [response] = await sgMail.send(msg);
+      console.log('📩 SendGrid STATUS:', response.statusCode);
+      console.log('📩 SendGrid HEADERS:', response.headers);
+      return response;
+    } catch (err: any) {
+      console.error('❌ Error enviando email con SendGrid:');
+      console.error(err.response?.body || err);
       throw new InternalServerErrorException('No se pudo enviar el email');
     }
   }

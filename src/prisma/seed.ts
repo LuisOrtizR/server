@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Iniciando seed...");
 
-  // Crear/actualizar admin
   const hashedPassword = await bcrypt.hash("admin123", 10);
 
   await prisma.admin.upsert({

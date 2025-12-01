@@ -1,3 +1,4 @@
+// src/contact/contact.service.ts
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContactDto } from '../common/dto/create-contact.dto';
@@ -6,8 +7,7 @@ import { MailService } from '../mail/mail.service';
 @Injectable()
 export class ContactService {
   private adminEmails = [
-    'luisangel930115@gmail.com',
-    'laortiz937@soy.sena.edu.co',
+    'laortiz937@soy.sena.edu.co', // Cambia este por tu Outlook o Yahoo para pruebas
   ];
 
   constructor(
@@ -68,16 +68,11 @@ export class ContactService {
                 <p><strong>Mensaje:</strong></p>
                 <p style="background-color: #f0f0f0; padding: 10px; border-radius: 4px;">${contact.message}</p>
               </div>
-              <a href="${process.env.FRONTEND_URL}/contacts" 
-                 style="display: inline-block; padding: 12px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                 Ver en la app
-              </a>
-              <p style="font-size: 12px; color: #999; margin-top: 20px;">Este es un correo automático, por favor no respondas directamente.</p>
             </div>
           `,
         });
       } catch (error) {
-        console.error(`Error enviando notificación a ${email}`, error);
+        console.error(`❌ Error enviando notificación a ${email}`, error);
       }
     }
   }
