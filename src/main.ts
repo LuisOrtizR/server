@@ -11,54 +11,61 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Asegurar carpetas de uploads
-  const uploadDirs = [
-    join(process.cwd(), 'uploads', 'aboutme'),
-    join(process.cwd(), 'uploads', 'projects'),
-  ];
+  // Crear carpetas de uploads si no existen
+  const uploadBase = join(process.cwd(), 'uploads');
+  const uploadDirs = ['aboutme', 'projects'].map(folder =>
+    join(uploadBase, folder),
+  );
 
-  uploadDirs.forEach((dir) => {
+  uploadDirs.forEach(dir => {
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   });
 
-  // Archivos estáticos
-  app.useStaticAssets(join(process.cwd(), 'uploads', 'aboutme'), {
-    prefix: '/uploads/aboutme/',
+  // Servir assets estáticos
+  uploadDirs.forEach(folder => {
+    const relative = folder.split('uploads')[1].replace(/\\/g, '/');
+    app.useStaticAssets(folder, {
+      prefix: `/uploads${relative}/`,
+    });
   });
 
-  app.useStaticAssets(join(process.cwd(), 'uploads', 'projects'), {
-    prefix: '/uploads/projects/',
-  });
-
-  // CORS seguro y dinámico
-  const allowedOrigins = process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
-    : ['http://localhost:5173'];
+  // CORS seguro y flexible
+  const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:5173')
+    .split(',')
+    .map(o => o.trim());
 
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('Not allowed by CORS'), false);
+      const isAllowed = allowedOrigins.some(allowed =>
+        allowed === '*' || new RegExp(`^${allowed.replace(/\*/g, '.*')}$`).test(origin),
+      );
+      isAllowed
+        ? callback(null, true)
+        : callback(new Error(`Not allowed by CORS: ${origin}`), false);
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
+  // Validaciones globales
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
 
-  const PORT = Number(process.env.PORT) || 3000;
+  // Puerto seguro (Railway / Render)
+  const PORT = Number(process.env.PORT ?? 8080);
   await app.listen(PORT, '0.0.0.0');
 
-  console.log(`🚀 Server running on port ${PORT}`);
+  const url = await app.getUrl();
+  console.log(`🚀 Server running on: ${url}`);
+  console.log(`📁 Uploads available: ${url}/uploads/*`);
+  console.log(`🌍 CORS allowed origins:`, allowedOrigins);
 }
 
 bootstrap();
